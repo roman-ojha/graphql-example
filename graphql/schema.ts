@@ -9,39 +9,6 @@ import {
 } from "graphql";
 import client from "../config/db.js";
 
-import lodash from "lodash";
-
-const users = [
-  {
-    id: 1,
-    name: "Roman",
-    email: "roman@gmail.com",
-  },
-  {
-    id: 2,
-    name: "Razz",
-    email: "razz@gmail.com",
-  },
-];
-
-const posts = [
-  {
-    id: 1,
-    caption: "Hello world",
-    user_id: 1,
-  },
-  {
-    id: 2,
-    caption: "Hello Roman",
-    user_id: 1,
-  },
-  {
-    id: 3,
-    caption: "Next level",
-    user_id: 2,
-  },
-];
-
 const UserType = new GraphQLObjectType({
   name: "User",
   fields: () => ({
@@ -56,8 +23,15 @@ const UserType = new GraphQLObjectType({
     },
     posts: {
       type: new GraphQLList(PostType),
-      resolve(parent, args) {
-        return lodash.filter(posts, { user_id: parent.id });
+      async resolve(parent, args) {
+        try {
+          const res = await client.query(
+            `SELECT * FROM Posts WHERE user_id=${parent.id}`
+          );
+          return res.rows;
+        } catch (err) {
+          return null;
+        }
       },
     },
   }),
@@ -74,8 +48,15 @@ const PostType = new GraphQLObjectType({
     },
     user: {
       type: UserType,
-      resolve(parent, args) {
-        return lodash.find(users, { id: parent.user_id });
+      async resolve(parent, args) {
+        try {
+          const res = await client.query(
+            `SELECT * FROM users WHERE id=${parent.user_id}`
+          );
+          return res.rows;
+        } catch (err) {
+          return null;
+        }
       },
     },
   }),
@@ -91,14 +72,15 @@ const RootQuery = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve(parent, args) {
-        client.query(`SELECT * FROM Users WHERE id=${args.id}`, (err, res) => {
-          if (err) {
-            return null;
-          } else {
-            return res.rows[0];
-          }
-        });
+      async resolve(parent, args) {
+        try {
+          const res = await client.query(
+            `SELECT * FROM Users WHERE id=${args.id}`
+          );
+          return res.rows[0];
+        } catch (err) {
+          return null;
+        }
       },
     },
     post: {
@@ -108,37 +90,37 @@ const RootQuery = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve(parent, args) {
-        client.query(`SELECT * FROM Posts WHERE id=${args.id}`, (err, res) => {
-          if (err) {
-            console.log(err);
-          } else {
-            return res.rows[0];
-          }
-        });
+      async resolve(parent, args) {
+        try {
+          const res = await client.query(
+            `SELECT * FROM Posts WHERE id=${args.id}`
+          );
+          return res.rows[0];
+        } catch (err) {
+          return null;
+        }
       },
     },
     users: {
       type: new GraphQLList(UserType),
-      resolve(parent, args) {
-        var result: any = "";
+      async resolve(parent, args) {
         try {
-          const res = client.query(`SELECT * FROM Users;`);
-          console.log(result);
-          return result;
-        } catch (err) {}
+          const res = await client.query(`SELECT * FROM Users`);
+          return res.rows;
+        } catch (err) {
+          return null;
+        }
       },
     },
     posts: {
       type: new GraphQLList(PostType),
-      resolve(parent, args) {
-        client.query(`SELECT * FROM Posts`, (err, res) => {
-          if (err) {
-            console.log(err);
-          } else {
-            return res.rows;
-          }
-        });
+      async resolve(parent, args) {
+        try {
+          const res = await client.query(`SELECT * FROM Posts`);
+          return res.rows;
+        } catch (err) {
+          return null;
+        }
       },
     },
   },
@@ -158,15 +140,14 @@ const Mutation = new GraphQLObjectType({
         },
       },
       async resolve(parent, args) {
-        const sql = "INSERT INTO users(name,email) VALUES($1, $2)";
-        const value = [args.name, args.email];
-        client.query(sql, value, (err, res) => {
-          if (err) {
-            return null;
-          } else {
-            return res;
-          }
-        });
+        try {
+          const sql = "INSERT INTO users(name,email) VALUES($1, $2)";
+          const value = [args.name, args.email];
+          const res = await client.query(sql, value);
+          return res.rows[0];
+        } catch (err) {
+          return null;
+        }
       },
     },
     addPost: {
@@ -180,15 +161,14 @@ const Mutation = new GraphQLObjectType({
         },
       },
       async resolve(parent, args) {
-        const sql = "INSERT INTO posts(caption,user_id) VALUES($1, $2)";
-        const value = [args.caption, args.user_id];
-        client.query(sql, value, (err, res) => {
-          if (err) {
-            return null;
-          } else {
-            return res;
-          }
-        });
+        try {
+          const sql = "INSERT INTO posts(caption,user_id) VALUES($1, $2)";
+          const value = [args.caption, args.user_id];
+          const res = await client.query(sql, value);
+          return res.rows[0];
+        } catch (err) {
+          return null;
+        }
       },
     },
   },

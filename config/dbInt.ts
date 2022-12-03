@@ -33,10 +33,9 @@ client
     client.query(
       `
         CREATE TABLE posts(
-            id SERIAL NOT NULL,
+            id SERIAL NOT NULL PRIMARY KEY,
             caption TEXT,
-            user_id BIGINT REFERENCES users(id),
-            UNIQUE(user_id)
+            user_id BIGINT REFERENCES users(id)
         );
       `,
       (err, res) => {
