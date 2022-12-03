@@ -4,6 +4,8 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
+  GraphQLEnumType,
+  GraphQLNonNull,
 } from "graphql";
 import client from "../config/db.js";
 
@@ -90,13 +92,13 @@ const RootQuery = new GraphQLObjectType({
         },
       },
       resolve(parent, args) {
-        //     client.query(`SELECT * FROM Users WHERE id=${args.id}`, (err, res) => {
-        //       if (err) {
-        //         console.log(err);
-        //       } else {
-        //     }
-        // });
-        return lodash.find(users, { id: args.id });
+        client.query(`SELECT * FROM Users WHERE id=${args.id}`, (err, res) => {
+          if (err) {
+            return null;
+          } else {
+            return res.rows[0];
+          }
+        });
       },
     },
     post: {
@@ -107,26 +109,86 @@ const RootQuery = new GraphQLObjectType({
         },
       },
       resolve(parent, args) {
-        // client.query(`SELECT * FROM Posts WHERE id=${args.id}`, (err, res) => {
-        //   if (err) {
-        //     console.log(err);
-        //   } else {
-        //     return;
-        //   }
-        // });
-        return lodash.find(posts, { id: args.id });
+        client.query(`SELECT * FROM Posts WHERE id=${args.id}`, (err, res) => {
+          if (err) {
+            console.log(err);
+          } else {
+            return res.rows[0];
+          }
+        });
       },
     },
     users: {
       type: new GraphQLList(UserType),
       resolve(parent, args) {
-        return users;
+        var result: any = "";
+        try {
+          const res = client.query(`SELECT * FROM Users;`);
+          console.log(result);
+          return result;
+        } catch (err) {}
       },
     },
     posts: {
       type: new GraphQLList(PostType),
       resolve(parent, args) {
-        return posts;
+        client.query(`SELECT * FROM Posts`, (err, res) => {
+          if (err) {
+            console.log(err);
+          } else {
+            return res.rows;
+          }
+        });
+      },
+    },
+  },
+});
+
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addUser: {
+      type: UserType,
+      args: {
+        name: {
+          type: new GraphQLNonNull(GraphQLString),
+        },
+        email: {
+          type: new GraphQLNonNull(GraphQLString),
+        },
+      },
+      async resolve(parent, args) {
+        const sql = "INSERT INTO users(name,email) VALUES($1, $2)";
+        const value = [args.name, args.email];
+        client.query(sql, value, (err, res) => {
+          if (err) {
+            return null;
+          } else {
+            return res;
+          }
+        });
+      },
+    },
+    addPost: {
+      type: PostType,
+      args: {
+        caption: {
+          type: GraphQLString,
+        },
+        user_id: {
+          type: new GraphQLNonNull(GraphQLInt),
+        },
+      },
+      async resolve(parent, args) {
+        const sql = "INSERT INTO posts(caption,user_id) VALUES($1, $2)";
+        const value = [args.caption, args.user_id];
+        client.query(sql, value, (err, res) => {
+          if (err) {
+            return null;
+          } else {
+            return res;
+          }
+        });
       },
     },
   },
@@ -134,4 +196,5 @@ const RootQuery = new GraphQLObjectType({
 
 export default new GraphQLSchema({
   query: RootQuery,
+  mutation: Mutation,
 });
