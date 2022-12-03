@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "env-cmd nodemon index.ts",
-    "start": "env-cmd ts-node index.ts"
+    "start": "env-cmd ts-node index.ts",
+    "init:db": "env-cmd ts-node ./config/dbInt.ts"
   },
   "repository": {
     "type": "git",
