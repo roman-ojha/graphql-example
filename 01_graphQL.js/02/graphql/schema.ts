@@ -20,7 +20,56 @@ const schema = buildSchema(`
     user(id: Int!): User
     post(id: Int!): Post
   }
+  type Mutation{
+    addUser(name: String!, email: String!): User
+    addPost(caption: String, user_id: Int!): Post
+  }
 `);
+
+// Root resolver
+const rootResolver = {
+  async user(args) {
+    try {
+      const res = await client.query(`SELECT * FROM Users WHERE id=${args.id}`);
+      return res.rows[0];
+    } catch (err) {
+      return null;
+    }
+  },
+  async post(args) {
+    try {
+      const res = await client.query(`SELECT * FROM Posts WHERE id=${args.id}`);
+      return res.rows[0];
+    } catch (err) {
+      return null;
+    }
+  },
+  async addUser(args) {
+    try {
+      const sql = "INSERT INTO users(name,email) VALUES($1, $2)";
+      const value = [args.name, args.email];
+      const res = await client.query(sql, value);
+      return {
+        name: args.name,
+        email: args.email,
+      };
+    } catch (err) {
+      return null;
+    }
+  },
+  async addPost(args) {
+    try {
+      const sql = "INSERT INTO posts(caption,user_id) VALUES($1, $2)";
+      const value = [args.caption, args.user_id];
+      const res = await client.query(sql, value);
+      console.log(args);
+      return res.rows[0];
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  },
+};
 
 /*
   Query:
@@ -61,27 +110,7 @@ const schema = buildSchema(`
 }
 */
 
-// Root resolver
-const root = {
-  async user(args) {
-    try {
-      const res = await client.query(`SELECT * FROM Users WHERE id=${args.id}`);
-      return res.rows[0];
-    } catch (err) {
-      return null;
-    }
-  },
-  async post(args) {
-    try {
-      const res = await client.query(`SELECT * FROM Posts WHERE id=${args.id}`);
-      return res.rows[0];
-    } catch (err) {
-      return null;
-    }
-  },
-};
-
 export default {
   schema: schema,
-  rootValue: root,
+  rootValue: rootResolver,
 };
