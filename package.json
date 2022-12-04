@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "env-cmd nodemon index.ts",
+    "dev": "env-cmd nodemon ./01_graphQL.js/01/index.ts",
     "start": "env-cmd ts-node index.ts",
     "init:db": "env-cmd ts-node ./config/dbInt.ts"
   },

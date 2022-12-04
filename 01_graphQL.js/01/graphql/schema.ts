@@ -183,19 +183,6 @@ const Mutation = new GraphQLObjectType({
         email: {
           type: new GraphQLNonNull(GraphQLString),
         },
-        // post: {
-        //   // type: new GraphQLInputObjectType({
-        //   //   name: "Post",
-        //   //   fields() {
-        //   //     return {
-        //   //       caption: {
-        //   //         type: GraphQLString,
-        //   //       },
-        //   //     };
-        //   //   },
-        //   // }),
-        //   // type: PostType,
-        // },
       },
       resolve(parent, args) {
         console.log(args);
