@@ -12,7 +12,8 @@ import "./config/db.js";
 app.use(
   "/graphql",
   graphqlHTTP({
-    schema,
+    schema: schema.schema,
+    rootValue: schema.rootValue,
     graphiql: true,
   })
 );
