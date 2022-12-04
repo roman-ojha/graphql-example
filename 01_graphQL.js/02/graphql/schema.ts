@@ -4,6 +4,7 @@ import client from "../config/db.js";
 // GraphQL Schema
 // Defining Model Type, Queries, Mutations
 // https://medium.com/codingthesmartway-com-blog/creating-a-graphql-server-with-node-js-and-express-f6dddc5320e1
+// https://www.moonhighway.com/articles/the-parent-argument/
 const schema = buildSchema(`
   type User {
     id: Int!
@@ -28,15 +29,35 @@ const schema = buildSchema(`
   }
 `);
 
-// Class implementation for GraphQL type
-class User {}
+// Class implementation for User GraphQL Object type
+class User {
+  private id: number;
+  private name: string;
+  private email: string;
+  constructor(id: number, name: string, email: string) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+  }
+  async posts() {
+    // getting post data and returning it
+    try {
+      const res = await client.query(
+        `SELECT * FROM Posts WHERE user_id=${this.id}`
+      );
+      return res.rows;
+    } catch (err) {
+      return null;
+    }
+  }
+}
 
 // Root resolver
 const rootResolver = {
   async user(args) {
     try {
       const res = await client.query(`SELECT * FROM Users WHERE id=${args.id}`);
-      return res.rows[0];
+      return new User(res.rows[0].id, res.rows[0].name, res.rows[0].email);
     } catch (err) {
       return null;
     }
@@ -83,7 +104,6 @@ const rootResolver = {
       const sql = "INSERT INTO posts(caption,user_id) VALUES($1, $2)";
       const value = [args.caption, args.user_id];
       const res = await client.query(sql, value);
-      console.log(args);
       return res.rows[0];
     } catch (err) {
       console.log(err);
