@@ -6,6 +6,7 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLNonNull,
+  GraphQLInputObjectType,
 } from "graphql";
 import client from "../config/db.js";
 
@@ -49,11 +50,12 @@ const PostType = new GraphQLObjectType({
     user: {
       type: UserType,
       async resolve(parent, args) {
+        console.log(parent);
         try {
           const res = await client.query(
             `SELECT * FROM users WHERE id=${parent.user_id}`
           );
-          return res.rows;
+          return res.rows[0];
         } catch (err) {
           return null;
         }
@@ -169,6 +171,35 @@ const Mutation = new GraphQLObjectType({
         } catch (err) {
           return null;
         }
+      },
+    },
+    add: {
+      // mutation to add new User and it's post
+      type: UserType,
+      args: {
+        name: {
+          type: GraphQLString,
+        },
+        email: {
+          type: new GraphQLNonNull(GraphQLString),
+        },
+        // post: {
+        //   // type: new GraphQLInputObjectType({
+        //   //   name: "Post",
+        //   //   fields() {
+        //   //     return {
+        //   //       caption: {
+        //   //         type: GraphQLString,
+        //   //       },
+        //   //     };
+        //   //   },
+        //   // }),
+        //   // type: PostType,
+        // },
+      },
+      resolve(parent, args) {
+        console.log(args);
+        return args;
       },
     },
   },
