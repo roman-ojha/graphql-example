@@ -1,0 +1,14 @@
+## 
+POST http://localhost:8000/graphql
+X-Request-Type: GraphQL
+
+{
+    "query":"
+        query {
+            user(id: 1){
+            name,
+            email,
+            }
+        }
+    "
+}

@@ -19,12 +19,17 @@ const schema = buildSchema(`
   type Query{
     user(id: Int!): User
     post(id: Int!): Post
+    users: [User]
+    posts: [Post]
   }
   type Mutation{
     addUser(name: String!, email: String!): User
     addPost(caption: String, user_id: Int!): Post
   }
 `);
+
+// Class implementation for GraphQL type
+class User {}
 
 // Root resolver
 const rootResolver = {
@@ -40,6 +45,22 @@ const rootResolver = {
     try {
       const res = await client.query(`SELECT * FROM Posts WHERE id=${args.id}`);
       return res.rows[0];
+    } catch (err) {
+      return null;
+    }
+  },
+  async users() {
+    try {
+      const res = await client.query(`SELECT * FROM Users`);
+      return res.rows;
+    } catch (err) {
+      return null;
+    }
+  },
+  async posts() {
+    try {
+      const res = await client.query(`SELECT * FROM Posts`);
+      return res.rows;
     } catch (err) {
       return null;
     }
@@ -100,14 +121,29 @@ const rootResolver = {
       caption,
       user_id
     }
+    mutation addNewUser($newUserName: String!, $newUserGmail: String!){
+      addUser(name: $newUserName, email: $newUserGmail){
+        ...userFields
+      }
+    
+    },
+    mutation addNewPost($userPostCaption: String, $postOnUserId: Int!){
+      addPost(caption: $userPostCaption, user_id: $postOnUserId){
+        ...postFields
+      }  
+    }
 
   Query Variables:
-    query getUser($id: Int!){
-    user(id: $id){
-      name,
-      email,
-    }
-}
+    {
+    "id": 21,
+    "userId1": 1,
+    "userId2": 21,
+    "postId": 1,
+    "newUserName": "Harry",
+    "newUserGmail": "harry@gmail.com",
+    "userPostCaption": "This is from jack",
+    "postOnUserId": 21
+  }
 */
 
 export default {
