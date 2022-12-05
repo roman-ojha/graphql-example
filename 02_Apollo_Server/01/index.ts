@@ -1,5 +1,14 @@
 import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
+import {
+  startStandaloneServer,
+  StandaloneServerContextFunctionArgument,
+} from "@apollo/server/standalone";
+import fs from "fs";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Define a Graphql Types
 const typeDefs = `#graphql
@@ -45,15 +54,30 @@ const resolver = {
   },
 };
 
-// define the context
-const context = {};
-
 const server = new ApolloServer({
   // pass it on here
-  typeDefs: typeDefs,
+  // typeDefs: typeDefs,
+  // you can also pass the '.graphql' || '.gql' file extension typeDefs here
+  typeDefs: fs
+    .readFileSync(path.join(__dirname, "/graphql/schema.graphql"))
+    .toString(),
   // pass resolver
   resolvers: resolver,
 });
+
+// define the context
+type Request = StandaloneServerContextFunctionArgument["req"];
+type Response = StandaloneServerContextFunctionArgument["res"];
+interface ContextArgs {
+  req: Request;
+  res: Response;
+}
+const context = async ({ req, res }: ContextArgs) => {
+  return {
+    req,
+    res,
+  };
+};
 
 // Passing an ApolloServer instance to the `startStandaloneServer` function:
 //  1. creates an Express app
@@ -62,12 +86,14 @@ const server = new ApolloServer({
 // Starting server
 await startStandaloneServer(server, {
   listen: { port: 8000 },
-  context: async ({ req, res }) => {
-    return {
-      req,
-      res,
-    };
-  },
+  // context: async ({ req, res }) => {
+  //   // accessing req and response inside context
+  //   return {
+  //     req,
+  //     res,
+  //   };
+  // },
+  context,
 })
   .then(({ url }) => {
     console.log(`🚀  Server ready at: ${url}`);
