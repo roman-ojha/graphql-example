@@ -1,0 +1,3 @@
+[submodule "03_Prisma"]
+	path = 03_Prisma
+	url = git@github.com:roman-ojha/e-reader.git
