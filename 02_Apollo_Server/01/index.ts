@@ -9,6 +9,9 @@ import { Client } from "pg";
 import { fileURLToPath } from "url";
 import client, { connect } from "./config/db.js";
 
+// importing types generate from .graphql
+import { User, Resolvers } from "./graphql/generated/resolvers-types.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -43,10 +46,20 @@ const typeDefs = `#graphql
 `;
 
 // define the resolver
-const resolver = {
+// we can use the resolver that get generated
+const resolver: Resolvers = {
   // for Query type
   Query: {
-    users: async (parent, args, ctx: Context) => {
+    // users: async (parent, args: User, ctx: Context) => {
+    //   // 'User' is the type that is generated from graphql
+    //   try {
+    //     const res = await ctx.db.query(`SELECT * FROM Users`);
+    //     return res.rows;
+    //   } catch (err) {
+    //     return null;
+    //   }
+    // },
+    users: async (_, __, ctx, info) => {
       try {
         const res = await ctx.db.query(`SELECT * FROM Users`);
         return res.rows;
@@ -71,7 +84,7 @@ const server = new ApolloServer({
 // define the context
 type Request = StandaloneServerContextFunctionArgument["req"];
 type Response = StandaloneServerContextFunctionArgument["res"];
-interface Context {
+export interface Context {
   req: Request;
   res: Response;
   db: Client;

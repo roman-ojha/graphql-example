@@ -11,4 +11,5 @@ generates:
       - "typescript-resolvers"
     config:
       useIndexSignature: true
-      contextType: "../index#MyContext"
+      # defining the context where the context is and the name of the context Interface
+      contextType: "../../index#Context"
