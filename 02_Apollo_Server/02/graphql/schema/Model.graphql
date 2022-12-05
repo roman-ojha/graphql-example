@@ -6,3 +6,9 @@ type User {
   email: String!
   posts: [Post]
 }
+
+type Post {
+  id: Int!
+  caption: String
+  user_id: User!
+}

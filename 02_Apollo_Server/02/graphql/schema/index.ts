@@ -10,9 +10,11 @@ const readSchema = (relativePath: string): string => {
 };
 
 const typeDefs = `
-${readSchema("/User.graphql")}
-${readSchema("/Post.graphql")}
-${readSchema("../schema.graphql")}
+${readSchema("/Model.graphql")}
+
+${readSchema("/Query.graphql")}
+
+${readSchema("/Mutation.graphql")}
 `;
 
 export default typeDefs;

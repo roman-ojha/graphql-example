@@ -10,7 +10,7 @@
     "02/01": "env-cmd nodemon ./02_Apollo_Server/01/index.ts",
     "02/01:generate": "graphql-codegen --config ./02_Apollo_Server/01/codegen.yml",
     "02/02": "env-cmd nodemon ./02_Apollo_Server/02/index.ts",
-    "02/02:generate": "graphql-codegen --config ./02_Apollo_Server/02/codegen.yml",
+    "02/02:generate": "ts-node 02_Apollo_Server/02/utils/writeSchema.ts && graphql-codegen --config ./02_Apollo_Server/02/codegen.yml",
     "prisma:generate": "npx prisma generate",
     "start": "env-cmd ts-node index.ts",
     "init:db": "env-cmd ts-node ./config/dbInt.ts"
