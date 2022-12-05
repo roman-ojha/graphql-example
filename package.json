@@ -10,7 +10,8 @@
     "02/01": "env-cmd nodemon ./02_Apollo_Server/01/index.ts",
     "02/01:generate": "graphql-codegen --config ./02_Apollo_Server/01/codegen.yml",
     "02/02": "env-cmd nodemon ./02_Apollo_Server/02/index.ts",
-    "02/02:generate": "graphql-codegen --config ./02_Apollo_Server/01/codegen.yml",
+    "02/02:generate": "graphql-codegen --config ./02_Apollo_Server/02/codegen.yml",
+    "prisma:generate": "npx prisma generate",
     "start": "env-cmd ts-node index.ts",
     "init:db": "env-cmd ts-node ./config/dbInt.ts"
   },
@@ -36,6 +37,7 @@
     "@graphql-codegen/cli": "^2.15.0",
     "@graphql-codegen/typescript": "^2.8.3",
     "@graphql-codegen/typescript-resolvers": "^2.7.8",
+    "@prisma/client": "^4.7.1",
     "@types/express": "^4.17.14",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.10",
@@ -47,10 +49,12 @@
   },
   "dependencies": {
     "@apollo/server": "^4.2.2",
+    "@prisma-korea/graphql-schema-generator": "^0.3.0",
     "env-cmd": "^10.1.0",
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
     "graphql": "^16.6.0",
-    "pg": "^8.8.0"
+    "pg": "^8.8.0",
+    "prisma": "^4.7.1"
   }
 }

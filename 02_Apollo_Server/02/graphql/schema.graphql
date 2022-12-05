@@ -16,7 +16,7 @@ type Post {
 type Query {
   users: [User]
   posts: [Post]
-  user: User
+  user(id: Int!): User
   post: Post
 }
 

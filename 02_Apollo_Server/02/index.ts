@@ -16,7 +16,6 @@ const server = new ApolloServer({
   resolvers,
 });
 
-// Database
 import "./config/db.js";
 
 startStandaloneServer(server, {
