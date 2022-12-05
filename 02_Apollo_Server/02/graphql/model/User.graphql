@@ -1,0 +1,8 @@
+"this is a description for User"
+type User {
+  "this is an description for id"
+  id: Int!
+  name: String!
+  email: String!
+  posts: [Post]
+}

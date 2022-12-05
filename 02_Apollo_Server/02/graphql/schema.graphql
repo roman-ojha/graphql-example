@@ -1,18 +1,3 @@
-"this is a description for User"
-type User {
-  "this is an description for id"
-  id: Int!
-  name: String!
-  email: String!
-  posts: [Post]
-}
-
-type Post {
-  id: Int!
-  caption: String
-  user_id: User!
-}
-
 type Query {
   users: [User]
   posts: [Post]
