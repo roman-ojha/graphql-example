@@ -5,15 +5,17 @@ const client = new pg.Client({
   host: process.env.DATABASEHOST,
   database: process.env.DATABASENAME,
   password: process.env.DATABASEPASSWORD,
-  //   port: process.env.DATABASEPORT,
   port: parseInt(process.env.DATABASEPORT as string),
 });
 
-client
-  .connect()
-  .then(() => {
-    console.log("Database connected");
-  })
-  .catch((err) => console.log(err));
+const connect = () => {
+  client
+    .connect()
+    .then(() => {
+      console.log("Database connected");
+    })
+    .catch((err) => console.log(err));
+};
 
 export default client;
+export { connect };

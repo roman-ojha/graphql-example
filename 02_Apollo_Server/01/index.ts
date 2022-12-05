@@ -5,7 +5,9 @@ import {
 } from "@apollo/server/standalone";
 import fs from "fs";
 import path, { dirname } from "path";
+import { Client } from "pg";
 import { fileURLToPath } from "url";
+import client, { connect } from "./config/db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -44,12 +46,13 @@ const typeDefs = `#graphql
 const resolver = {
   // for Query type
   Query: {
-    users: (parent, args, context) => {
-      return [
-        {
-          name: "Roman",
-        },
-      ];
+    users: async (parent, args, ctx: Context) => {
+      try {
+        const res = await ctx.db.query(`SELECT * FROM Users`);
+        return res.rows;
+      } catch (err) {
+        return null;
+      }
     },
   },
 };
@@ -68,23 +71,29 @@ const server = new ApolloServer({
 // define the context
 type Request = StandaloneServerContextFunctionArgument["req"];
 type Response = StandaloneServerContextFunctionArgument["res"];
-interface ContextArgs {
+interface Context {
   req: Request;
   res: Response;
+  db: Client;
 }
-const context = async ({ req, res }: ContextArgs) => {
-  return {
+const context = async ({ req, res }: { req: Request; res: Response }) => {
+  // we will pass postgresql DB client object into context
+  return <Context>{
     req,
     res,
+    db: client,
   };
 };
+
+// Database connected
+connect();
 
 // Passing an ApolloServer instance to the `startStandaloneServer` function:
 //  1. creates an Express app
 //  2. installs your ApolloServer instance as middleware
 //  3. prepares your app to handle incoming requests
 // Starting server
-await startStandaloneServer(server, {
+startStandaloneServer(server, {
   listen: { port: 8000 },
   // context: async ({ req, res }) => {
   //   // accessing req and response inside context
