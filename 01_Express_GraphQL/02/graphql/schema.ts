@@ -1,5 +1,6 @@
 import { buildSchema } from "graphql";
 import client from "../config/db.js";
+import { Context } from "../index.js";
 
 // GraphQL Schema
 // Defining Model Type, Queries, Mutations
@@ -54,17 +55,20 @@ class User {
 
 // Root resolver
 const rootResolver = {
-  async user(args) {
+  async user(args, context: () => Context) {
+    // accessing the context
+    const cxt = context();
     try {
-      const res = await client.query(`SELECT * FROM Users WHERE id=${args.id}`);
+      const res = await cxt.db.query(`SELECT * FROM Users WHERE id=${args.id}`);
       return new User(res.rows[0].id, res.rows[0].name, res.rows[0].email);
     } catch (err) {
       return null;
     }
   },
-  async post(args) {
+  async post(args, context: () => Context) {
+    const cxt = context();
     try {
-      const res = await client.query(`SELECT * FROM Posts WHERE id=${args.id}`);
+      const res = await cxt.db.query(`SELECT * FROM Posts WHERE id=${args.id}`);
       return res.rows[0];
     } catch (err) {
       return null;

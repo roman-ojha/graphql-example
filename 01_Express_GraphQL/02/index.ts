@@ -1,6 +1,8 @@
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import schema from "./graphql/schema.js";
+import type pg from "pg";
+import client from "./config/db.js";
 
 const port = process.env.PORT || 8000;
 const app = express();
@@ -14,9 +16,22 @@ app.use(
   graphqlHTTP({
     schema: schema.schema,
     rootValue: schema.rootValue,
+    context: () => {
+      // context is define by use and get pass to every resolver
+      return {
+        hello: "",
+        db: client,
+      };
+    },
     graphiql: true,
   })
 );
+
+// we will create a type of context so that we can specify on resolver
+export interface Context {
+  hello: string;
+  db: pg.Client;
+}
 
 app.listen(port, () => {
   console.log("Server Started");
