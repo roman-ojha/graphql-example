@@ -76,9 +76,15 @@ interface Context {
   res: Response;
   db: Client;
 }
-const context = async ({ req, res }: { req: Request; res: Response }) => {
+const context = async ({
+  req,
+  res,
+}: {
+  req: Request;
+  res: Response;
+}): Promise<Context> => {
   // we will pass postgresql DB client object into context
-  return <Context>{
+  return {
     req,
     res,
     db: client,
