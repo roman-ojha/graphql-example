@@ -17,7 +17,6 @@ app.use(
     schema: schema.schema,
     rootValue: schema.rootValue,
     context: () => {
-      // context is define by use and get pass to every resolver
       return {
         hello: "",
         db: client,

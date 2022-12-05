@@ -7,6 +7,7 @@
   "scripts": {
     "01/01": "env-cmd nodemon ./01_Express_GraphQL/01/index.ts",
     "01/02": "env-cmd nodemon ./01_Express_GraphQL/02/index.ts",
+    "02/01": "env-cmd nodemon ./02_Apollo_Server/01/index.ts",
     "start": "env-cmd ts-node index.ts",
     "init:db": "env-cmd ts-node ./config/dbInt.ts"
   },
@@ -39,6 +40,7 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "@apollo/server": "^4.2.2",
     "env-cmd": "^10.1.0",
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
