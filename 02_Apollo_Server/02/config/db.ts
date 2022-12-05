@@ -8,14 +8,11 @@ const client = new pg.Client({
   port: parseInt(process.env.DATABASEPORT as string),
 });
 
-const connect = () => {
-  client
-    .connect()
-    .then(() => {
-      console.log("Database connected");
-    })
-    .catch((err) => console.log(err));
-};
+client
+  .connect()
+  .then(() => {
+    console.log("Database connected");
+  })
+  .catch((err) => console.log(err));
 
 export default client;
-export { connect };
